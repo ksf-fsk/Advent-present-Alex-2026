@@ -3,7 +3,7 @@ import json
 import os
 import threading
 import time
-from zoneinfo import ZoneInfo  # Корректная работа с часовыми поясами
+from zoneinfo import ZoneInfo
 from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -15,11 +15,12 @@ import schedule
 
 TOKEN = "8658031274:AAHN9rcIbxIXlHPTQHToDCr6TAeAInVDOYU"
 
+# Жесткий сброс любых зависших сессий Telegram перед стартом
 try:
   temp_bot = telebot.TeleBot(TOKEN)
   temp_bot.stop_polling()
   temp_bot.remove_webhook()
-  time.sleep(1.5)
+  time.sleep(2)
 except Exception as e:
   print(f"Предупреждение при сбросе сессии: {e}")
 
@@ -213,11 +214,7 @@ def get_calendar_markup(user_id):
   markup = InlineKeyboardMarkup(row_width=5)
   buttons = []
   read_days = user_read_days.get(user_id, set())
-
-  if read_days:
-    next_unlocked_day = max(read_days) + 1
-  else:
-    next_unlocked_day = 1
+  next_unlocked_day = max(read_days) + 1 if read_days else 1
 
   for i in range(1, 22):
     if i in read_days:
@@ -390,53 +387,51 @@ def callback_query(call):
 
 # ==================== ФОНОВАЯ РАССЫЛКА (SCHEDULE) ====================
 def send_daily_notification():
-  """Функция рассылки уведомлений пользователям."""
-  print("\n[РАССЫЛКА]: Запуск автоматической утренней рассылки по Москве...")
-  for user_id in user_read_days.keys():
+  """Ежедневная рассылка (автоматически прекращается после 21 дня)."""
+  print("\n[РАССЫЛКА]: Проверка и отправка напоминаний...")
+  for user_id, read_days in list(user_read_days.items()):
+    completed_count = len(read_days)
+    if completed_count >= 21:
+      continue  # Если прошли все 21 день — больше не шлем
+    
     try:
       bot.send_message(
           user_id,
           (
-              "⏰ <b>Твой новый день ждет, чтобы ты открыл его!</b>\n\nЗагляни в"
-              " календарь, чтобы узнать что-то новое:"
+              f"⏰ <b>Твой день {completed_count + 1} ждет, чтобы ты открыл его!</b>\n\n"
+              "Загляни в календарь, чтобы узнать что-то новое:"
           ),
           reply_markup=get_calendar_markup(user_id),
           parse_mode="HTML",
       )
-      print(f"Уведомление успешно отправлено пользователю {user_id}")
+      print(f"Успешно отправлено пользователю {user_id} (день {completed_count + 1}/21)")
     except Exception as e:
-      print(f"Не удалось отправить уведомление пользователю {user_id}: {e}")
+      print(f"Ошибка отправки пользователю {user_id}: {e}")
 
 def run_scheduler():
-  """Фоновый планировщик с учетом московского времени (Europe/Moscow)."""
   moscow_tz = ZoneInfo("Europe/Moscow")
   
-  # ТЕСТОВОЕ ВРЕМЯ: Установите нужное время для теста (например, 18:43 по Москве)
+  # ТЕСТОВОЕ ВРЕМЯ (поменяйте на нужное, например "08:20" для продакшена)
   TARGET_TIME = "18:43"
   
-  schedule.every().day.at(TARGET_TIME).do(send_daily_notification)
-  print(f"Планировщик настроен на время {TARGET_TIME} по МСК.")
+  print(f"Планировщик запущен. Время рассылки: {TARGET_TIME} МСК (лимит: 21 день).")
+  last_sent_date = None
 
   while True:
-    # Получаем текущее время именно по Московскому часовому поясу
     now_moscow = datetime.now(moscow_tz)
-    # Проверяем запланированные задачи (schedule сравнивает локальное время машины, 
-    # поэтому мы делаем сверку с учетом зоны или настраиваем запуск)
-    # Альтернативный цикл проверки для точного срабатывания по МСК:
-    
-    # Более надежный метод проверки времени по МСК в цикле:
     current_time_str = now_moscow.strftime("%H:%M")
-    if current_time_str == TARGET_TIME:
-      # Запускаем рассылку один раз в эту минуту
+    current_date_str = now_moscow.strftime("%Y-%m-%d")
+    
+    if current_time_str == TARGET_TIME and last_sent_date != current_date_str:
       send_daily_notification()
-      # Ждем 61 секунду, чтобы не запустить повторно в ту же минуту
-      time.sleep(61)
+      last_sent_date = current_date_str
+      time.sleep(60)
       
     time.sleep(15)
 
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
   scheduler_thread.start()
-  print("Фоновый планировщик рассылки успешно запущен в потоке!")
+  print("Фоновый планировщик запущен в отдельном потоке!")
   print("Бот успешно запущен и работает!")
-  bot.polling(none_stop=True)
+  bot.polling(none_stop=True, interval=1, timeout=20)
