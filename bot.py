@@ -1324,7 +1324,7 @@ def send_daily_notification():
       print(f"Не удалось отправить уведомление пользователю {user_id}: {e}")
 
 def job_wrapper():
-  start_date = datetime(2026, 10, 6, tzinfo=MSK_OFFSET)
+  start_date = datetime(2026, 10, 7, tzinfo=MSK_OFFSET)
   current_msk = datetime.now(MSK_OFFSET)
   if 0 <= (current_msk.date() - start_date.date()).days < 21:
     send_daily_notification()
@@ -1332,7 +1332,7 @@ def job_wrapper():
     print("[РАССЫЛКА]: Период в 21 день завершен.")
 
 def run_scheduler():
-  schedule.every().day.at("17:35").do(job_wrapper)
+  schedule.every().day.at("08:20").do(job_wrapper)
   while True:
     schedule.run_pending()
     time.sleep(30)
