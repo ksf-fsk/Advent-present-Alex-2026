@@ -1555,6 +1555,6 @@ def run_scheduler():
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
   scheduler_thread.start()
-  print("Фоновый планировщик рассылки (19:20 МСК) успешно запущен в потоке с учетом лимита 21 день!")
+  print("Фоновый планировщик рассылки (19:30 МСК) успешно запущен в потоке с учетом лимита 21 день!")
   print("Бот успешно запущен и работает!")
   bot.polling(none_stop=True)
