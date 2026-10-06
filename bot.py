@@ -1509,8 +1509,8 @@ def callback_query(call):
 
 # ==================== ФОНОВАЯ РАССЫЛКА (SCHEDULE) ====================
 def send_daily_notification():
-  """Функция рассылки уведомлений в 19:15 утра всем активным пользователям."""
-  print("\n[РАССЫЛКА 19:15]: Запуск автоматической утренней рассылки...")
+  """Функция рассылки уведомлений в 20:35 утра всем активным пользователям."""
+  print("\n[РАССЫЛКА 20:35]: Запуск автоматической утренней рассылки...")
   for user_id in user_read_days.keys():
     try:
       bot.send_message(
@@ -1528,9 +1528,9 @@ def send_daily_notification():
 
 def run_scheduler():
   """Фоновый поток для работы библиотеки schedule с учетом UTC (Render) и периода в 21 день."""
-  # Задаем время отправки 19:30 по МСК (UTC+3) -> 16:30 по UTC, либо с учетом локального времени сервера Render (обычно UTC).
+  # Задаем время отправки 20:35 по МСК (UTC+3) -> 17:35 по UTC, либо с учетом локального времени сервера Render (обычно UTC).
   # Для надежности привязываемся к московскому времени или задаем смещение явно.
-  # Пусть рассылка срабатывает в 19:30 по МСК. 19:30 MSK = 16:30 UTC.
+  # Пусть рассылка срабатывает в 20:35 по МСК. 20:35 MSK = 17:35 UTC.
   
   MSK_OFFSET = timezone(timedelta(hours=3))
 
@@ -1546,7 +1546,7 @@ def run_scheduler():
       print("[РАССЫЛКА]: Период в 21 день завершен.")
 
 def run_scheduler():
-    schedule.every().day.at("16:30").do(job_wrapper)
+    schedule.every().day.at("17:35").do(job_wrapper)
     
     while True:
         schedule.run_pending()
@@ -1555,6 +1555,6 @@ def run_scheduler():
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
   scheduler_thread.start()
-  print("Фоновый планировщик рассылки (19:30 МСК) успешно запущен в потоке с учетом лимита 21 день!")
+  print("Фоновый планировщик рассылки (20:35 МСК) успешно запущен в потоке с учетом лимита 21 день!")
   print("Бот успешно запущен и работает!")
   bot.polling(none_stop=True)
