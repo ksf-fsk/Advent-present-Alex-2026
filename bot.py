@@ -1525,14 +1525,43 @@ def send_daily_notification():
     except Exception as e:
       print(f"Не удалось отправить уведомление пользователю {user_id}: {e}")
 
+import datetime
+
 def run_scheduler():
-  """Фоновый поток для работы библиотеки schedule."""
-  # Время старта по серверу во Франкфурте (15:20 во Франкфурте = 16:20 по Москве)
-  schedule.every().day.at("15:20").do(send_daily_notification)
-  
+  """Фоновый поток, проверяющий время каждую минуту."""
+  print("Фоновый таймер успешно запущен!")
+  last_sent_date = None  # Чтобы не отправить случайно дважды за минуту
+
   while True:
-    schedule.run_pending()
-    time.sleep(1)
+    now_utc = datetime.datetime.now()  # Время сервера (Франкфурт / UTC)
+    
+    # Нужное время на сервере: 15:20 (что соответствует 16:20 по Москве)
+    target_hour = 15
+    target_minute = 20
+
+    if now_utc.hour == target_hour and now_utc.minute == target_minute:
+      # Проверяем, что за сегодня мы это уведомление еще не отправляли
+      if last_sent_date != now_utc.date():
+        print(f"\n[РАССЫЛКА {target_hour}:{target_minute} UTC]: Запуск рассылки...")
+        for user_id in user_read_days.keys():
+          try:
+            bot.send_message(
+                user_id,
+                (
+                    "⏰ <b>Твой новый день ждет, чтобы ты открыл его!</b>\n\nЗагляни в"
+                    " календарь, чтобы узнать что-то новое:"
+                ),
+                reply_markup=get_calendar_markup(user_id),
+                parse_mode="HTML",
+            )
+            print(f"Уведомление успешно отправлено пользователю {user_id}")
+          except Exception as e:
+            print(f"Не удалось отправить уведомление пользователю {user_id}: {e}")
+        
+        last_sent_date = now_utc.date()  днем
+
+    # Проверяем каждую минуту
+    time.sleep(60)
 
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
