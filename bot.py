@@ -1545,11 +1545,12 @@ def run_scheduler():
     else:
       print("[РАССЫЛКА]: Период в 21 день завершен.")
 
-schedule.every().day.at("16:30").do(job_wrapper)
-
+def run_scheduler():
+    schedule.every().day.at("16:30").do(job_wrapper)
+    
     while True:
-      schedule.run_pending()
-      time.sleep(30)
+        schedule.run_pending()
+        time.sleep(30)
 
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
