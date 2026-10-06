@@ -12,7 +12,7 @@ from telebot.types import (
 import telebot
 import schedule
 
-TOKEN = "8860715213:AAHK5Om-qWSrAYTk4WlonNU2h6RDypKE9UE"
+TOKEN = "8860715213:AAEnB0YjUuGB6HgizT1FzxqCpLF-eZaFx5o"
 
 try:
   temp_bot = telebot.TeleBot(TOKEN)
