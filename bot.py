@@ -1528,9 +1528,9 @@ def send_daily_notification():
 
 def run_scheduler():
   """Фоновый поток для работы библиотеки schedule с учетом UTC (Render) и периода в 21 день."""
-  # Задаем время отправки 19:20 по МСК (UTC+3) -> 16:20 по UTC, либо с учетом локального времени сервера Render (обычно UTC).
+  # Задаем время отправки 19:30 по МСК (UTC+3) -> 16:30 по UTC, либо с учетом локального времени сервера Render (обычно UTC).
   # Для надежности привязываемся к московскому времени или задаем смещение явно.
-  # Пусть рассылка срабатывает в 19:20 по МСК. 19:20 MSK = 16:20 UTC.
+  # Пусть рассылка срабатывает в 19:30 по МСК. 19:30 MSK = 16:30 UTC.
   
   MSK_OFFSET = timezone(timedelta(hours=3))
 
@@ -1545,11 +1545,11 @@ def run_scheduler():
     else:
       print("[РАССЫЛКА]: Период в 21 день завершен.")
 
-schedule.every().day.at("16:20").do(job_wrapper)
+schedule.every().day.at("16:30").do(job_wrapper)
 
-  while True:
-    schedule.run_pending()
-    time.sleep(30)
+    while True:
+      schedule.run_pending()
+      time.sleep(30)
 
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
