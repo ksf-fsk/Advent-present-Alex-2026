@@ -1109,7 +1109,7 @@ DAYS_CONTENT = {
             " прокладывает долгосрочные векторы движения. Когда у команды и у"
             " человека есть понятная «карта местности», любой локальный шторм"
             " воспринимается не как катастрофа, а как временная погода на заранее"
-            " известный маршрут."
+            " известном маршруте."
         ),
         "recommendation": (
             "📚 <a"
@@ -1481,7 +1481,7 @@ def callback_query(call):
           except Exception as e:
             print(f"Ошибка при отправке напоминания: {e}")
 
-        threading.Thread(target=send_next_data_prompt := send_next_day_prompt).start()
+        threading.Thread(target=send_next_day_prompt).start()
 
   elif call.data == "back_to_menu":
     bot.answer_callback_query(call.id)
