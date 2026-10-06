@@ -1515,7 +1515,7 @@ def job_wrapper():
 
 
 def run_scheduler():
-  schedule.every().day.at("17:35").do(job_wrapper)
+  schedule.every().day.at("08:20").do(job_wrapper)
   while True:
     schedule.run_pending()
     time.sleep(30)
