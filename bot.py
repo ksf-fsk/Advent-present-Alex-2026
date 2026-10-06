@@ -1535,9 +1535,9 @@ def run_scheduler():
   while True:
     now_utc = datetime.datetime.now()  # Время сервера (Франкфурт / UTC)
     
-    # Нужное время на сервере: 15:20 (что соответствует 16:20 по Москве)
+    # Нужное время на сервере: 15:40 (что соответствует 16:40 по Москве)
     target_hour = 15
-    target_minute = 20
+    target_minute = 40
 
     if now_utc.hour == target_hour and now_utc.minute == target_minute:
       # Проверяем, что за сегодня мы это уведомление еще не отправляли
