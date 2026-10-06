@@ -1558,7 +1558,7 @@ def run_scheduler():
           except Exception as e:
             print(f"Не удалось отправить уведомление пользователю {user_id}: {e}")
         
-        last_sent_date = now_utc.date()  днем
+last_sent_date = now_utc.date()
 
     # Проверяем каждую минуту
     time.sleep(60)
