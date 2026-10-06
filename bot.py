@@ -1508,8 +1508,8 @@ def callback_query(call):
 
 # ==================== ФОНОВАЯ РАССЫЛКА (SCHEDULE) ====================
 def send_daily_notification():
-  """Функция рассылки уведомлений в 15:00 утра всем активным пользователям."""
-  print("\n[РАССЫЛКА 15:00]: Запуск автоматической утренней рассылки...")
+  """Функция рассылки уведомлений активным пользователям."""
+  print("\n[РАССЫЛКА]: Запуск автоматической рассылки...")
   for user_id in user_read_days.keys():
     try:
       bot.send_message(
@@ -1527,17 +1527,16 @@ def send_daily_notification():
 
 def run_scheduler():
   """Фоновый поток для работы библиотеки schedule."""
-  schedule.every().day.at("15:00").do(send_daily_notification)
-  START_DATE = datetime(2026, 10, 6)
+  # Время старта по серверу во Франкфурте (15:20 во Франкфурте = 16:20 по Москве)
+  schedule.every().day.at("15:20").do(send_daily_notification)
+  
   while True:
-    now = datetime.now()
-    if now >= START_DATE:
-      schedule.run_pending()
-    time.sleep(30)
+    schedule.run_pending()
+    time.sleep(1)
 
 if __name__ == "__main__":
   scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
   scheduler_thread.start()
-  print("Фоновый планировщик рассылки (15:00) успешно запущен в потоке!")
+  print("Фоновый планировщик рассылки успешно запущен в потоке!")
   print("Бот успешно запущен и работает!")
   bot.polling(none_stop=True)
