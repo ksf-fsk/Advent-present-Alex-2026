@@ -382,7 +382,7 @@ DAYS_CONTENT = {
         ),
         "recommendation": (
             '🎬 <a'
-            ' href="https://www.youtube.com/results?search_query=Как+спорт+и+природа+меняют+структуру+мозга">Смотреть'
+            ' href="https://www.youtube.com/watch?v=JsKQ3IL89Lc">Смотреть'
             " научно-популярную лекцию «Как спорт и природа меняют структуру"
             ' мозга» на YouTube</a>'
         ),
