@@ -439,11 +439,11 @@ def run_scheduler():
     while True:
         try:
             now_msk = datetime.now(MSK_OFFSET)
-            start_date = datetime(2026, 10, 6, tzinfo=MSK_OFFSET)
+            start_date = datetime(2026, 10, 8, tzinfo=MSK_OFFSET)
             days_passed = (now_msk.date() - start_date.date()).days
 
-            # Проверяем: прошло от 0 до 20 дней (всего 21 день) И сейчас ровно 09:20 утра по МСК
-            if 0 <= days_passed < 21 and now_msk.hour == 9 and now_msk.minute == 20:
+            # Проверяем: прошло от 0 до 20 дней (всего 21 день) И сейчас ровно 08:20 утра по МСК
+            if 0 <= days_passed < 21 and now_msk.hour == 8 and now_msk.minute == 20:
                 if last_sent_date != now_msk.date():
                     send_daily_notification()
                     last_sent_date = now_msk.date()
